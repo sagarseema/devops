@@ -1,0 +1,1 @@
+./redireciton.sh: line 16: dates: command not found
