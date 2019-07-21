@@ -1,0 +1,28 @@
+---
+- hosts: webservers
+  gather_facts: false
+
+  tasks:
+    - name: Install Web Server
+      yum: name=httpd state=installed
+      become: yes
+      register: temp_var
+      
+    - name: debugging
+      debug: var=temp_var
+
+    - name: check success
+      debug: msg='httpd installation is successful'
+      #when: temp_var.rc == 0
+      when: temp_var is succeeded
+
+    - name : printing failure message
+      debug: msg='httpd installation failed!!' 
+      #when: temp_var is failed
+      when: temp_var.rc != 0
+
+    - name : check if alredy installed
+      debug: msg='already installed'
+      when: temp_var.rc == 0 and temp_var.changed == false
+
+...

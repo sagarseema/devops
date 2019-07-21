@@ -1,0 +1,9 @@
+---
+- hosts: appservers
+  gather_facts: false
+
+  tasks:
+    - name: Install Web Server
+      yum: name=httpd state=installed
+      become: yes
+...

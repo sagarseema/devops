@@ -1,0 +1,4 @@
+ansible-playbook playbook1.yml -vvv
+
+ansible web -m raw -a 'sudo uptime'
+
