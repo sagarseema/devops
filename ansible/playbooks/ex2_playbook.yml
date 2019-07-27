@@ -1,0 +1,47 @@
+-
+  name: execute script on all web servers
+  hosts: webservers
+  tasks:
+   - name: conf entry
+     lineinfile:
+       path: /etc/resolv.conf
+       line: 'nameserver 10.1.250.10'
+     register: conf_var
+     become: yes
+
+   - name: set up web server
+     user: 
+       name: web_user
+       uid: 1040
+       group: developers
+     register: web_var
+
+   - name: debugging
+     debug: var=web_var
+
+   - name: check web_var
+     debug: msg='web var succeeded'
+     when: web_var is succeeded
+
+   - name: debugging
+     debug: var=conf_var
+
+   - name: check confvar
+     debug: msg='config entry added'
+     when: conf_var is succeeded
+
+   - name: Start httpd
+     service:
+        name: httpd
+        state: started
+     register: httpd_var
+
+   - name: debugging
+     debug: var=httpd_var
+
+   - name: check success
+     debug: msg='httpd started'
+     when: httpd_var is succeeded
+
+   - name: Execute a script 
+     script: /tmp/install_Script.sh

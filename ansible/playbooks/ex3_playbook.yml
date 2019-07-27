@@ -1,0 +1,30 @@
+---
+- name: playbook3
+  hosts: web1
+
+  tasks:
+
+    - name: update nameserver
+      lineinfile:
+        path: /etc/resolv.conf
+        line: '#nameserver {{ nameserver_ip }}'
+
+    - name: disbale snmp port
+      firewalld:
+        port: '{{ snmp_port }}'
+        permanent: true
+        state: disabled
+      register: snmp_var
+    
+    - name: debugging
+      debug: var=snmp_var
+
+
+    - name: check success
+      debug: msg='snmp_var is success'
+      when: snmp_var is succeeded
+
+
+
+
+...

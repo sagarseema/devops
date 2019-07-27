@@ -1,0 +1,48 @@
+
+-
+  name: Execute command on localhost
+  hosts: web2
+  tasks: 
+    -  
+       name: Execute a command
+       command : date
+       register: temp_var
+
+    -  
+       name: debugging
+       debug: var=temp_var
+
+    -  
+       name: check success
+       debug: msg='date command execution is successful'
+       #when: temp_var.rc == 0
+       when: temp_var is succeeded
+
+    - 
+      name: Execute hosts
+      command: cat /etc/hosts
+      register: hosts1_var
+
+    - 
+      name: debugging
+      debug: var=hosts1_var
+      
+    - 
+      name: check 
+      debug: msg='hosts along with date'
+      when: hosts1_var is succeeded
+
+-
+  name: Execute a command to display the hosts
+  hosts: web1
+  tasks:
+    - name: Execute a command to list hosts
+      command : cat /etc/hosts
+      register: hosts_var
+
+    - name: debugging
+      debug: var=hosts_var
+
+    - name: check_sucess
+      debug: msg='hosts listed successfully'
+      when: hosts_var is succeeded
