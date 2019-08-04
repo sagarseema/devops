@@ -1,0 +1,6 @@
+# defaults file f r tt_aws
+region: ap-south-1
+instance_type: t2.micro
+ami: ami-0a74bfeb190bd404f  # Redhat
+keypair: aws-demo-4 # this shuld only be the name of the pem file and no path
+tagname: AWS-remote-demo

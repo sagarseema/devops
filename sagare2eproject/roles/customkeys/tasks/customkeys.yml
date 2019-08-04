@@ -1,0 +1,11 @@
+- name: Set authorized key taken from file
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+  register: ak_var
+
+- name: debugging
+  debug: var=ak_var
+
+

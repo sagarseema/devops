@@ -1,0 +1,58 @@
+- name: Gather Facts to check if a similar instance is running
+  ec2_instance_facts:
+    region: ap-south-1a
+    filters:
+      instance-state-name: [ "shutting-down", "stopping", "stopped" ]
+      "tag:Name" : "{{ tagname }}"
+  register: ec2_exists
+
+- name: Display Details
+  debug: var=ec2_exists
+
+- name: Create an ec2 instance
+  ec2:
+    key_name: "{{ keypair }}"
+    aws_access_key: "{{ my_access_key }}"
+    aws_secret_key: "{{ my_secret_key }}"
+    group: launch-wizard-5  # security group name
+    instance_type: "{{ instance_type}}"
+    image: "{{ ami }}"
+    wait: true
+    region: "{{ region }}"
+    exact_count: 1  # default
+    count_tag:
+      Name: "AWS-demo-remote"
+    instance_tags:
+      Name: "AWS-demo-remote"
+    vpc_subnet_id: "subnet-ced25b82"
+    assign_public_ip: yes
+  when: ec2_exists.instances | selectattr('state','equalto','running') | list | count == 0 
+  register: ec2
+    
+- debug:
+    msg: "{{ item['private_ip'] }}"
+  with_items: "{{ ec2.instances }}"
+
+
+- name: Add all web instance IPs to host group
+  add_host: 
+    hostname: "{{ item.private_ip }}"
+    groupname: webservers
+    ansible_user: ec2-user 
+  with_items: '{{ ec2.instances }}'
+
+- name: Set authorized key taken from file
+  sudo: true
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+  register: ak_var
+
+- name: debugging
+  debug: var=ak_var
+
+
+- name: Wait for SSH to come up
+  wait_for: host={{ item.public_dns_name }} port=22 delay=60 timeout=320 state=started
+  with_items: '{{ ec2.instances }}'
