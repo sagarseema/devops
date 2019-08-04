@@ -1,0 +1,6 @@
+---
+
+# tasks file for tomcat_aws
+- include: aws_create.yml
+
+

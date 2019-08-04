@@ -1,0 +1,54 @@
+- name: Create tomcat AWS infrastructure
+  hosts: localhost
+  connection: local
+  roles:
+    - tomcat_aws
+
+
+- name: Deploy tomcat service
+  hosts: webservers
+  become: yes
+  remote_user: ec2-user
+  become_method: sudo
+  environment:
+    ANSIBLE_CONFIG: "ansible.cfg"
+  roles:
+    - tomcat
+
+  tasks:
+  
+  #- copy:
+  #    src: /usr/share/maven3/nvnshoppingcart/target/nvnshoppingcart.war
+  #    dest: /usr/local/apache-tomcat-8.0.23/webapps/
+  #    mode: 0777
+  #    owner: root
+  #    group: root
+
+  #- name: start tomcat service
+  #  become: true
+  #  service: name=tomcat state=startedi
+
+#- name: start tomcat on remote
+#  hosts: webservers
+#  #become: yes
+#  sudo: true
+#  tasks:
+#    - name: command
+#      command: /usr/local/apache-tomcat-8.0.23/bin/startup.sh
+#      register: startup
+#
+#    - name: debug
+#      debug: var=startup
+
+#    - name: curl
+ #     hosts: webservers
+ # become: yes
+ # tasks:
+ #   - name: curl
+#      command: curl://http://localhost:8080
+#      register: curl
+ 
+#- name: debug
+#  debug: var=curl
+
+
